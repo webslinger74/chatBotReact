@@ -47,6 +47,13 @@ const sendMessage = () => {
   const handleSelectChat = (id) => {
     setActiveChat(id)
   }
+
+  const deleteChat = (id) => {
+    const updatedChats = chats.filter((chat) => chat.id !== id)
+    const newchats = updatedChats
+    setChats(newchats)
+    setActiveChat(updatedChats[0].id)
+      }
   
   return (
     <div className='chat-app'>
@@ -56,9 +63,9 @@ const sendMessage = () => {
         <i className="bx bx-edit-alt new-chat" onClick={onNewChat}></i>
       </div>
       {chats.map((chat) => (
-        <div key={chat.id} className={`chat-list-item ${chat.id === activeChat ? 'active' : ''}`} onClick={() => handleSelectChat(chat.id)}>
-        <h4>{chat.displayId}</h4>
-        <i className="bx bx-x-circle"></i>
+        <div key={chat.id} className={`chat-list-item ${chat.id === activeChat ? 'active' : ''}`} >
+        <h4 className="H4" onClick={() => handleSelectChat(chat.id)}>{chat.displayId}</h4>
+        <i className="bx bx-x-circle" onClick={() => deleteChat(chat.id)}></i>
       </div>
       )
     )}
