@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ChatBotStart from './components/ChatBotStart'
 import ChatBotApp from './components/ChatBotApp'
 import { v4 as uuidv4 } from 'uuid'
@@ -19,6 +19,18 @@ const App = () => {
 
   const handleGoBack = () => {
     setIsChatting(false);
+  }
+
+  const createNewChatWithMessage = (message) => {
+   const newChat = {
+        id: uuidv4(),
+        displayId: `Chat ${new Date().toLocaleDateString('en-GB')} ${new Date().toLocaleTimeString()}`,
+        messages: [message],
+      }
+
+      const updatedChats = [newChat, ...chats]
+      setChats(updatedChats)
+      setActiveChat(newChat.id)
   }
 
   const createNewChat = () => {
@@ -42,7 +54,8 @@ const App = () => {
       setChats={setChats}
       activeChat={activeChat}
       setActiveChat={setActiveChat}  
-      onNewChat={createNewChat} /> : <ChatBotStart onStartChat={handleStartChat} />
+      onNewChat={createNewChat}
+      onNewChatWithMessage={createNewChatWithMessage} /> : <ChatBotStart onStartChat={handleStartChat} />
       }
     </div>
   )

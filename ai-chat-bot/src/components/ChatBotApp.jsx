@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './ChatBotApp.css'
 
-const ChatBotApp = ( { onGoBack, chats, setChats, activeChat, setActiveChat, onNewChat } ) => {
+const ChatBotApp = ( { onGoBack, chats, setChats, activeChat, setActiveChat, onNewChat, onNewChatWithMessage } ) => {
   
   const [inputValue, setInputValue] = useState('')
   const [messages, setMessages] = useState(chats[0]?.messages || [])
@@ -23,6 +23,11 @@ const sendMessage = () => {
     text: inputValue,
     timestamp: new Date().toLocaleTimeString()
   }
+
+  if (chats.length === 0) {
+   onNewChatWithMessage(newMessage)
+   setInputValue('')
+  } else {
   
   const updatedMessages = [...messages, newMessage]
   setMessages(updatedMessages)
@@ -36,6 +41,7 @@ const sendMessage = () => {
   })
   setChats(updatedChats)
   }
+}
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
