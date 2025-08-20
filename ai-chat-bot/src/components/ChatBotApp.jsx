@@ -6,6 +6,7 @@ const ChatBotApp = ( { onGoBack, chats, setChats, activeChat, setActiveChat, onN
   
   const [inputValue, setInputValue] = useState('')
   const [messages, setMessages] = useState(chats[0]?.messages || [])
+  
 
   useEffect(() => {
     const activeChaatObj = chats.find((chat) => chat.id === activeChat)

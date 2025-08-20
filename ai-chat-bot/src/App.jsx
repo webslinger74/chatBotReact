@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ChatBotStart from './components/ChatBotStart'
 import ChatBotApp from './components/ChatBotApp'
 import { v4 as uuidv4 } from 'uuid'
-import axios from 'axios'
 
 const App = () => {
 
@@ -10,8 +9,8 @@ const App = () => {
   const [chats, setChats] = useState([])
   const [activeChat, setActiveChat] = useState(null)
 
-  useEffect(() => {
 
+  useEffect(() => {
   }, [chats])
 
   const handleStartChat = () => {
@@ -41,26 +40,57 @@ const App = () => {
 
   const getResponseFromChatBotWhenNoChat = async (message, chats) => {
   try {
-      const response = await axios.get("http://localhost:8080", {
-        withCredentials: false,
-        params: { userMessage : message.text }
-      })
-      
-    const newMessageResponse = {
-    type: "response",
-    text: response.data,
-    timestamp: new Date().toLocaleTimeString()
-  }   
+      const response = await fetch('http://localhost:8080/stream?' + new URLSearchParams({
+        userMessage: message.text
+      }), {
+        headers : {
+          'Access-Control-Allow-Origin':'http://localhost:5173'
+        }
+   
+      }); 
 
-    const updatedChats = chats.map((chat) => {
-      return {...chat, messages: [message, newMessageResponse] }
-  })
-    setChats(updatedChats)
+        if (!response.ok) {
+          throw new Error(`HTTP error: Status ${response.status}`);
+        }
+
+        const reader = response.body.getReader(); 
+        const decoder = new TextDecoder('utf-8'); 
+
+        while (true) {
+          const { value, done } = await reader.read(); 
+
+          if (done) {
+            break;
+          }
+          const dataNew = decoder.decode(value, { stream: true }); 
+          const newMessageResponse = {
+          type: "response",
+          text: dataNew,
+          timestamp: new Date().toLocaleTimeString()
+      } 
+       updateTheChats(newMessageResponse)
+   
+    }
 
   } catch (error) {
       console.log(error);
   }
   }
+
+  const updateTheChats = (newMessageResponse) => {  
+      setChats(prevChats => { 
+         return prevChats.map((chat) => {
+        let messagesin = [...chat.messages];
+          if (messagesin.length === 1) {
+              const messagesOut = [...messagesin, newMessageResponse]
+              return {...chat, messages: messagesOut }
+          }  else {
+            if(messagesin.length === 2) {
+            return {...chat, messages: [{...messagesin[0]}, {...messagesin[1], text: messagesin[1].text + newMessageResponse.text}]}
+      }}
+   })}
+  )
+}
 
   const createNewChat = () => {
        const newChat = {
