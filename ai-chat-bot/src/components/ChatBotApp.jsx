@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { act, useEffect, useState } from 'react'
 import './ChatBotApp.css'
-import axios from 'axios'
 
-const ChatBotApp = ( { onGoBack, chats, setChats, activeChat, setActiveChat, onNewChat, onNewChatWithMessage } ) => {
+const ChatBotApp = ( { onGoBack, chats, setChats, activeChat, setActiveChat, onNewChat, onNewChatWithMessage, onCurrentChatWithMessage } ) => {
   
   const [inputValue, setInputValue] = useState('')
   const [messages, setMessages] = useState(chats[0]?.messages || [])
   
 
   useEffect(() => {
-    const activeChaatObj = chats.find((chat) => chat.id === activeChat)
-    setMessages(activeChaatObj ? activeChaatObj.messages : [])
+    const activeChatObj = chats.find((chat) => chat.id === activeChat)
+    setMessages(activeChatObj ? activeChatObj.messages : [])
   }, [activeChat, chats])
 
 const handleInputChange = (e) => {
@@ -30,53 +29,9 @@ const sendMessage = async () => {
    onNewChatWithMessage(newMessage)
    setInputValue('')
   } else {
-  
-  const updatedMessages = [...messages, newMessage]
-  setMessages(updatedMessages)
-  setInputValue('')
-
-  const updatedChats = chats.map((chat) => {
-    if (chat.id === activeChat) {
-      return {...chat, messages: updatedMessages }
-    }
-    return chat
-  })
-  setChats(updatedChats) 
-  getResponseFromChatBot(newMessage, updatedMessages, updatedChats)
-  }
- 
-}
-
-const getResponseFromChatBot = async (message, messages, chats) => {
-  console.log(message.text + " message");
-  try {
-      const response = await axios.get("http://localhost:8080", {
-        withCredentials: false,
-        params: { userMessage : message.text }
-      })
-      console.log(response.data + "  axios response");
-      
-     const newMessageResponse = {
-    type: "response",
-    text: response.data,
-    timestamp: new Date().toLocaleTimeString()
-  }   
-
-    const updatedMessages = [...messages, newMessageResponse]
-    setMessages(updatedMessages)
-
-    const updatedChats = chats.map((chat) => {
-     if (chat.id === activeChat) {
-      return {...chat, messages: updatedMessages }
-    }
-    return chat
-  })
-    setChats(updatedChats)
-
-  } catch (error) {
-      console.log(error);
-  }
-
+   onCurrentChatWithMessage(newMessage, chats)
+   setInputValue('')
+  } 
 }
 
   const handleKeyDown = (e) => {
