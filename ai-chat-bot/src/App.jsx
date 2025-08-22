@@ -15,8 +15,6 @@ const App = () => {
   }, [chats])
 
   useEffect(() => {
-    console.log("howmanytimes")
-    console.log(responseApi)
     addMessageToCurrentChat(responseApi, chats)
   }, [responseApi])
 
@@ -78,7 +76,6 @@ const App = () => {
       } 
   
       setResponseApi((prevResponseApi) => {
-        console.log(prevResponseApi[0].text + newMessageResponse.text + "waht")
         return ([{type:'reponse', timestamp: new Date().toLocaleTimeString(), text: prevResponseApi[0].text + newMessageResponse.text }])
     })
   }
@@ -133,35 +130,42 @@ const App = () => {
           if (chat.id === activeChat) {
         let messagesin = [...chat.messages];
              if (message.type === 'prompt') {
-                 console.log(message.text, "text1");
-              console.log("1")
+             setResponseApi((prevResponseApi) => ([{text:'', type:'response'}]))
               const messagesOut = [...messagesin, message]
               return {...chat, messages: messagesOut }
           } else {
-            // if (message.type === 'response') {
-              console.log(messagesin.length + "length")
-              console.log("2")
-                 console.log(message[0].text, "text2");
-                 
-            return {...chat, messages: [{...messagesin[0]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-            }
+                 const size = messagesin.length
+                 // if odd its same number if even it -1
+                 if (size === 1) {
+                    return {...chat, messages: [{...messagesin[0]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                 } 
+                 if (size === 2) {
+                    return {...chat, messages: [{...messagesin[0]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                 }
+                 if (size === 3) {
+                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                 }
+                 if (size == 4) {
+                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                 }
+                 if (size == 5) {
+                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {...messagesin[3]}, {...messagesin[4]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                 }
+                //  return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+            
+          }
     } else {
       return chat
     }
   })
   
   if (message.type === 'prompt') {
-    // see what chats is here
     updateTheChatsDirect(updatedChatter)
-    console.log("is a 1 here")
     getResponseFromChatWhenChatExists(message, updatedChatter)
   } else {
-
-    console.log("is a 2 coming here")
     updateTheChatsDirect(updatedChatter)
   }
-
-    }
+}
 
     const updateTheChatsDirect = (updatedChatter) => {
       setChats((prevChats) => {
