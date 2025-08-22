@@ -135,24 +135,15 @@ const App = () => {
               return {...chat, messages: messagesOut }
           } else {
                  const size = messagesin.length
-                 // if odd its same number if even it -1
-                 if (size === 1) {
-                    return {...chat, messages: [{...messagesin[0]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-                 } 
-                 if (size === 2) {
-                    return {...chat, messages: [{...messagesin[0]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+
+                 if (size %2 !== 0) {
+                       return {...chat, messages: [...messagesin, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
+                  }
+              
+                 if (size %2 === 0) {
+                  const messagesSliced = messagesin.slice(0,-1)
+                    return {...chat, messages: [...messagesSliced, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
                  }
-                 if (size === 3) {
-                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-                 }
-                 if (size == 4) {
-                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-                 }
-                 if (size == 5) {
-                    return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {...messagesin[3]}, {...messagesin[4]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-                 }
-                //  return {...chat, messages: [{...messagesin[0]}, {...messagesin[1]}, {...messagesin[2]}, {type:'response', text: message[0].text, timestamp: new Date().toLocaleTimeString() }]}
-            
           }
     } else {
       return chat
